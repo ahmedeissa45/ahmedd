@@ -1,0 +1,216 @@
+DELIMITER $$
+CREATE PROCEDURE uniteda_MusterilerHepsi ()
+BEGIN
+SELECT
+musteri_id as ID,
+musteri_ad as Adı,
+musteri_soyad as Soyadı,
+musteri_tel as Telefon,
+musteri_mail as Mail,
+musteri_adres as Adres
+FROM uniteda_musteriler;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_MusteriEkle (
+id varchar(64) ,
+ad varchar(64) ,
+soy varchar(64) ,
+tel varchar(25) ,
+mail varchar(250),
+adr varchar(250)
+)
+BEGIN
+INSERT INTO uniteda_musteriler
+VALUES (id, ad, soy, tel, mail, adr);
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_MusteriGuncelle (
+id varchar(64) ,
+ad varchar(64) ,
+soy varchar(64) ,
+tel varchar(25) ,
+mail varchar(250),
+adr varchar(250)
+)
+BEGIN
+UPDATE uniteda_musteriler
+SET
+musteri_ad = ad,
+musteri_soyad = soy,
+musteri_tel = tel,
+musteri_mail = mail,
+musteri_adres = adr
+WHERE
+musteri_id = id;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_MusteriSil (
+id varchar(64)
+)
+BEGIN
+DELETE FROM uniteda_musteriler
+WHERE musteri_id = id;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_MusteriBul (
+filtre varchar(32)
+)
+BEGIN
+SELECT * FROM uniteda_musteriler
+WHERE
+musteri_id LIKE CONCAT('%',filtre,'%') OR
+musteri_ad LIKE CONCAT('%',filtre,'%') OR
+musteri_soyad LIKE CONCAT('%',filtre,'%') OR
+musteri_tel LIKE CONCAT('%',filtre,'%') OR
+musteri_mail LIKE CONCAT('%',filtre,'%') OR
+musteri_adres LIKE CONCAT('%',filtre,'%');
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_çalışanlar
+(
+id varchar(64)
+)
+BEGIN
+SELECT * FROM uniteda_musteriler
+WHERE Çalışan Adı = Aid;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_Çalışan 
+Maaş varchar(64) ,
+ad varchar(64) ,
+tel varchar(25) ,
+adr varchar(250)
+)
+BEGIN
+UPDATE uniteda_musteriler
+SET
+Çalışan_ad = ad,
+Çalışan_soyad = soy,
+Çalışan_tel = tel,
+Çalışan_adres = adr
+WHERE
+Çalışan_id = id;
+END $$
+DELIMITER ;
+
+
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_OdemeEkle (
+oid varchar(64) ,
+mid varchar(64) ,
+tarih datetime ,
+tutar float ,
+tur varchar(25) ,
+aciklama varchar(250)
+)
+BEGIN
+INSERT INTO uniteda_odemeler
+VALUES (oid, mid, tarih, tutar, tur, aciklama);
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_OdemeDetay (
+)
+BEGIN
+SELECT
+o.odeme_id,
+m.musteri_id,
+CONCAT(musteri_ad,' ', musteri_soyad ) as `Müşteri Ad Soyad`,
+o.odeme_tarih as `Ödeme Tarihi`,
+o.odeme_tutar as `Ödeme Tutarı`,
+o.odeme_tur as `Ödeme Türü`,
+o.odeme_aciklama as `Açıklama`
+FROM abc_musteriler m inner join abc_odemeler o
+on m.musteri_id = o.musteri_id;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_OdemeGuncelle (
+oid varchar(64) ,
+mid varchar(64) ,
+tarih datetime ,
+tutar float ,
+tur varchar(25) ,
+aciklama varchar(250)
+)
+BEGIN
+UPDATE uniteda_odemeler
+SET
+musteri_id = mid,
+odeme_tarih = tarih,
+odeme_tutar = tutar,
+odeme_tur = tur,
+odeme_aciklama = aciklama
+WHERE
+odeme_id = oid;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_OdemeSil (
+oid varchar(64)
+)
+BEGIN
+DELETE FROM abc_odemeler
+WHERE odeme_id = oid;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE uniteda_MusteriBakiye(
+id varchar(64)
+)
+BEGIN
+declare borc float;
+declare odeme float;
+SELECT SUM(satis_fiyat) into borc
+FROM abc_satislar
+WHERE musteri_id = id;
+SELECT SUM(odeme_tutar) into odeme
+FROM uniteda_odemeler
+WHERE musteri_id = id;
+SELECT odeme - borc;
+END $$
+DELIMITER ;
+
+
+
+DELIMITER ;
+DELIMITER $$
+CREATE PROCEDURE uniteda_OdemelerToplam()
+BEGIN
+SELECT SUM(odeme_tutar)
+FROM uniteda_odemeler ;
+END $$
+DELIMITER ;
+
+
+call uniteda_SatislarToplam();
+call uniteda_OdemelerToplam();
+
+

@@ -1,0 +1,61 @@
+create database company;
+
+use database company;
+
+ create table Gayrimenkul
+    (
+     Müşteriler    varchar(64) not null,
+     Ödemler       varchar(64) not null,
+     Konut birimleri  varchar(64) not null,
+     çalışanlar     varchar(64) not null,
+     primary key(Müşteriler)
+    );
+
+
+create table Müşteriler
+(
+Müşteri id   varchar(45) not null,
+Adress   varchar(45) not null,
+Telefon  varchar(45) not null,
+Mail    varchar(250) not null,  
+Müşteri Adı   varchar(250) not null,
+Müşteri Soyadı varchar(45) not null, 
+primary key (Müşteri id)
+);
+
+
+create table Ödemler 
+Ödeme id  varchar(45) not null,
+ödeme yöntemi   varchar(45) not null,
+Tarih   varchar(45) not null,
+Tutar   varchar(45) not null,
+
+primary key (Ödeme id)
+);
+
+
+create table Konut birimleri
+(
+Fiyat  varchar(45) not null,
+adress  varchar(45) not null,
+Konum  varchar(45) not null,
+Açiklama  varchar(45) not null,
+primary key (Fiyat)
+);
+
+
+create table çalışanlar
+(
+Çalışan Adı   varchar(45) not null,
+Çalışan Soyadı   varchar(45) not null,
+adress   varchar(45) not null,
+Maaş   varchar(45) not null,
+yetenekler   varchar(45) not null,
+primary key (Çalışan Adı)
+);
+
+
+
+
+
+

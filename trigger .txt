@@ -1,0 +1,41 @@
+-- Eğer satılmak istenen adet stokta yoksa satışa izin vermesin:
+DELIMITER //
+CREATE TRIGGER tg_stok_kontrol
+BEFORE INSERT on uniteda_satislar FOR EACH ROW
+BEGIN
+declare uid int; -- ürün id
+declare stk int; -- stok adedi
+declare adt int; -- satılan adet
+declare hatamesaj varchar(250);
+set uid = NEW.urun_id;
+set adt = 1; -- eğer bir satışta birden fazla satış yapılacaksa
+-- NEW.satis_adet kullanılabilirdi.
+select urun_stok into stk
+from uniteda_urunler where urun_id = uid;
+IF (adt > stk ) THEN
+set hatamesaj = CONCAT('hoop! ', adt, ' satılmak isteniyor, ancak ', stk, ' adet var!');
+SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = hatamesaj;
+END IF;
+END; //
+DELIMITER ;
+
+
+
+-- satış eklediğimizde ürünler tablosundan stok satılan adet kadar azaltılsın
+DELIMITER //
+CREATE TRIGGER tg_stok_azalt
+AFTER INSERT on uniteda_satislar FOR EACH ROW
+BEGIN
+declare uid int; -- ürün id
+declare stk int; -- stok adedi
+declare sid int; -- satış id
+declare adt int; -- satılan adet
+set uid = NEW.urun_id ;
+set sid = NEW.satis_id ;
+set adt = 1; -- birden fazla satılmış olsaydı NEW.satis_adet kullanılabilirdi.
+select urun_stok into stk
+from uniteda_urunler where urun_id = uid;
+update urunler set urun_stok = urun_stok - adt
+where urun_id = uid;
+END; //
+DELIMITER ;
